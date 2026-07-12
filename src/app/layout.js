@@ -1,48 +1,39 @@
-import { Geist, Geist_Mono } from "next/font/google";
+import { Cairo } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const cairo = Cairo({
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  weight: ["400", "600", "700", "800", "900"],
 });
 
 export const metadata = {
-  title: "TinyPix — ضغط الصور مجانًا | Free Image Compressor",
+  title: "TinyPix — Free Online Image Compressor | Compress JPG, PNG & WebP",
   description:
-    "اضغط صورك مجانًا وبسرعة مباشرة فالمتصفح. بلا رفع للسيرفرات، خصوصية كاملة. Compress JPG, PNG & WebP images for free, directly in your browser. No uploads, 100% private.",
+    "Compress images for free, directly in your browser. No uploads, no servers, 100% private. Reduce JPG, PNG & WebP file size in seconds while keeping great quality.",
   keywords: [
-    "ضغط الصور",
-    "تصغير حجم الصور",
-    "ضغط صور اونلاين",
     "image compressor",
     "compress images online",
     "reduce image size",
     "compress jpg",
     "compress png",
+    "compress webp",
+    "free image compression",
+    "image optimizer",
     "TinyPix",
   ],
   openGraph: {
-    title: "TinyPix — ضغط الصور مجانًا",
+    title: "TinyPix — Free Online Image Compressor",
     description:
-      "اضغط صورك مجانًا مباشرة فالمتصفح — بلا رفع، خصوصية كاملة، وسرعة فائقة.",
+      "Compress images for free, right in your browser — no uploads, 100% private, blazing fast.",
     type: "website",
-    locale: "ar_MA",
+    locale: "en_US",
   },
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="ar" dir="rtl">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
-      </body>
+    <html lang="en" dir="ltr">
+      <body className={`${cairo.className} antialiased`}>{children}</body>
     </html>
   );
 }
