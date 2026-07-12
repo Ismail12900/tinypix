@@ -297,7 +297,10 @@ export default function Home() {
         </div>
       )}
 
-     {/* Footer */}
+    {/* Footer */}
       <footer className="mt-auto pt-16 text-center text-white/30 text-xs relative z-10">
         <p>TinyPix ⚡ — your images never get stored anywhere</p>
       </footer>
+    </main>
+  );
+}
