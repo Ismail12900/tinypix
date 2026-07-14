@@ -42,9 +42,10 @@ export default function Home() {
     return (bytes / (1024 * 1024)).toFixed(2) + " MB";
   };
 
-  const savings = (item) =>
+ const savings = (item) =>
     (100 - (item.compressed.size / item.original.size) * 100).toFixed(0);
 
+  const grewBigger = (item) => item.compressed.size > item.original.size;
   const outputName = (item) => {
     const base = item.original.name.replace(/\.[^.]+$/, "");
     if (format === "image/jpeg") return "tinypix-" + base + ".jpg";
@@ -190,7 +191,11 @@ export default function Home() {
                 </button>
               ))}
             </div>
-            <p className="text-xs text-white/40 mt-2">Tip: WebP usually gives the smallest files for the web</p>
+<p className="text-xs text-white/40 mt-2">
+              {format === "image/png"
+                ? "⚠️ PNG is lossless: photos will often get BIGGER. Use it only for graphics, logos and screenshots."
+                : "Tip: WebP usually gives the smallest files for the web"}
+            </p>
           </div>
 
           {/* Quality slider */}
@@ -239,8 +244,12 @@ export default function Home() {
                 </div>
                 {item.compressed && (
                   <>
-                    <span className="bg-gradient-to-r from-[#ff7a59]/20 to-[#a78bfa]/20 text-[#ffb49e] text-xs font-black px-3 py-1.5 rounded-xl whitespace-nowrap border border-[#ff7a59]/30">
-                      -{savings(item)}%
+                   <span className={`text-xs font-black px-3 py-1.5 rounded-xl whitespace-nowrap border ${
+                      grewBigger(item)
+                        ? "bg-red-500/10 text-red-300 border-red-500/30"
+                        : "bg-gradient-to-r from-[#ff7a59]/20 to-[#a78bfa]/20 text-[#ffb49e] border-[#ff7a59]/30"
+                    }`}>
+                      {grewBigger(item) ? "+" + Math.abs(savings(item)) + "%" : "-" + savings(item) + "%"}
                     </span>
                     <button
                       onClick={() => download(item)}
