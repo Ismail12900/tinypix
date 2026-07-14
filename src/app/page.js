@@ -299,7 +299,12 @@ export default function Home() {
 
     {/* Footer */}
       <footer className="mt-auto pt-16 text-center text-white/30 text-xs relative z-10">
-        <p>TinyPix ⚡ — your images never get stored anywhere</p>
+        <div className="mb-3">
+          <a href="/how-to-compress-images" className="text-white/50 hover:text-[#ff7a59] transition underline">How to compress images</a>
+          <span className="mx-2">·</span>
+          <a href="/faq" className="text-white/50 hover:text-[#ff7a59] transition underline">FAQ</a>
+        </div>
+        <p>TinyPix — your images never get stored anywhere</p>
       </footer>
     </main>
   );
