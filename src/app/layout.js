@@ -1,4 +1,5 @@
 import { Cairo } from "next/font/google";
+import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 
 const cairo = Cairo({
@@ -15,7 +16,10 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" dir="ltr">
-      <body className={`${cairo.className} antialiased`}>{children}</body>
+      <body className={`${cairo.className} antialiased`}>
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }
