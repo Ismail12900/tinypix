@@ -108,8 +108,9 @@ export default function Home() {
   const compressedFiles = files.filter((f) => f.compressed);
   const totalBefore = compressedFiles.reduce((s, f) => s + f.original.size, 0);
   const totalAfter = compressedFiles.reduce((s, f) => s + f.compressed.size, 0);
-  const totalSavedPct =
+ const totalSavedPct =
     totalBefore > 0 ? (100 - (totalAfter / totalBefore) * 100).toFixed(0) : 0;
+  const totalGrew = totalAfter > totalBefore;
 
   return (
     <main className="relative min-h-screen flex flex-col items-center px-4 pb-20 z-10">
@@ -164,9 +165,9 @@ export default function Home() {
                 <p className="text-xs text-white/50">After</p>
                 <p className="font-bold text-[#ff7a59]">{formatSize(totalAfter)}</p>
               </div>
-              <div className="bg-gradient-to-r from-[#ff7a59] to-[#a78bfa] rounded-xl px-4 py-2">
-                <p className="text-xs text-white/80">You saved</p>
-                <p className="font-black text-xl">{totalSavedPct}%</p>
+              <div className={`rounded-xl px-4 py-2 ${totalGrew ? "bg-red-500/20 border border-red-500/40" : "bg-gradient-to-r from-[#ff7a59] to-[#a78bfa]"}`}>
+                <p className="text-xs text-white/80">{totalGrew ? "Size grew" : "You saved"}</p>
+                <p className="font-black text-xl">{totalGrew ? "+" + Math.abs(totalSavedPct) + "%" : totalSavedPct + "%"}</p>
               </div>
             </div>
           )}
