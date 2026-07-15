@@ -11,11 +11,19 @@ const FORMATS = [
   { id: "image/webp", label: "WebP" },
 ];
 
+const SIZES = [
+  { id: 0, label: "Original size" },
+  { id: 1920, label: "1920px (Full HD)" },
+  { id: 1280, label: "1280px (Web)" },
+  { id: 800, label: "800px (Small)" },
+];
+
 export default function Home() {
   const [files, setFiles] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
   const [quality, setQuality] = useState(70);
   const [format, setFormat] = useState("original");
+  const [maxSize, setMaxSize] = useState(0);
   const [isCompressing, setIsCompressing] = useState(false);
   const inputRef = useRef(null);
 
@@ -42,10 +50,11 @@ export default function Home() {
     return (bytes / (1024 * 1024)).toFixed(2) + " MB";
   };
 
- const savings = (item) =>
+  const savings = (item) =>
     (100 - (item.compressed.size / item.original.size) * 100).toFixed(0);
 
   const grewBigger = (item) => item.compressed.size > item.original.size;
+
   const outputName = (item) => {
     const base = item.original.name.replace(/\.[^.]+$/, "");
     if (format === "image/jpeg") return "tinypix-" + base + ".jpg";
@@ -63,6 +72,9 @@ export default function Home() {
     };
     if (format !== "original") {
       options.fileType = format;
+    }
+    if (maxSize > 0) {
+      options.maxWidthOrHeight = maxSize;
     }
     const results = [];
     for (const item of files) {
@@ -108,7 +120,7 @@ export default function Home() {
   const compressedFiles = files.filter((f) => f.compressed);
   const totalBefore = compressedFiles.reduce((s, f) => s + f.original.size, 0);
   const totalAfter = compressedFiles.reduce((s, f) => s + f.compressed.size, 0);
- const totalSavedPct =
+  const totalSavedPct =
     totalBefore > 0 ? (100 - (totalAfter / totalBefore) * 100).toFixed(0) : 0;
   const totalGrew = totalAfter > totalBefore;
 
@@ -131,7 +143,7 @@ export default function Home() {
           Shrink your images, <span className="bg-gradient-to-r from-[#ff7a59] to-[#a78bfa] bg-clip-text text-transparent">not their quality</span>
         </h1>
         <p className="text-white/60 mt-4 max-w-md mx-auto">
-          Compress and convert JPG, PNG and WebP right in your browser. Your images never leave your device. Free, fast, unlimited.
+          Compress, resize and convert JPG, PNG and WebP right in your browser. Your images never leave your device. Free, fast, unlimited.
         </p>
       </section>
 
@@ -172,6 +184,33 @@ export default function Home() {
             </div>
           )}
 
+          {/* Resize selector */}
+          <div className="glass rounded-2xl p-5 mt-4 fade-up">
+            <div className="flex justify-between mb-3">
+              <span className="font-semibold">Max dimensions</span>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {SIZES.map((s) => (
+                <button
+                  key={s.id}
+                  onClick={() => setMaxSize(s.id)}
+                  className={`px-4 py-2 rounded-xl text-sm font-bold transition ${
+                    maxSize === s.id
+                      ? "bg-gradient-to-r from-[#ff7a59] to-[#a78bfa] text-white shadow-lg shadow-[#ff7a59]/30"
+                      : "bg-white/5 text-white/60 hover:bg-white/10"
+                  }`}
+                >
+                  {s.label}
+                </button>
+              ))}
+            </div>
+            <p className="text-xs text-white/40 mt-2">
+              {maxSize === 0
+                ? "Keeps the original width and height"
+                : `Longest side will be reduced to ${maxSize}px. Aspect ratio is always preserved.`}
+            </p>
+          </div>
+
           {/* Format selector */}
           <div className="glass rounded-2xl p-5 mt-4 fade-up">
             <div className="flex justify-between mb-3">
@@ -192,7 +231,7 @@ export default function Home() {
                 </button>
               ))}
             </div>
-<p className="text-xs text-white/40 mt-2">
+            <p className="text-xs text-white/40 mt-2">
               {format === "image/png"
                 ? "⚠️ PNG is lossless: photos will often get BIGGER. Use it only for graphics, logos and screenshots."
                 : "Tip: WebP usually gives the smallest files for the web"}
@@ -216,7 +255,7 @@ export default function Home() {
               disabled={isCompressing}
               className="bg-gradient-to-r from-[#ff7a59] to-[#e85d3d] hover:brightness-110 disabled:opacity-50 px-10 py-3.5 rounded-2xl font-extrabold text-lg transition shadow-lg shadow-[#ff7a59]/30"
             >
-              {isCompressing ? "⏳ Working..." : format === "original" ? "🚀 Compress images" : "🚀 Compress and convert"}
+              {isCompressing ? "⏳ Working..." : "🚀 Compress images"}
             </button>
             {compressedFiles.length > 1 && (
               <button onClick={downloadAllZip} className="bg-gradient-to-r from-[#a78bfa] to-[#7c3aed] hover:brightness-110 px-7 py-3.5 rounded-2xl font-bold transition shadow-lg shadow-[#7c3aed]/30">
@@ -245,7 +284,7 @@ export default function Home() {
                 </div>
                 {item.compressed && (
                   <>
-                   <span className={`text-xs font-black px-3 py-1.5 rounded-xl whitespace-nowrap border ${
+                    <span className={`text-xs font-black px-3 py-1.5 rounded-xl whitespace-nowrap border ${
                       grewBigger(item)
                         ? "bg-red-500/10 text-red-300 border-red-500/30"
                         : "bg-gradient-to-r from-[#ff7a59]/20 to-[#a78bfa]/20 text-[#ffb49e] border-[#ff7a59]/30"
@@ -272,7 +311,7 @@ export default function Home() {
       )}
 
       <footer className="mt-auto pt-16 text-center text-white/30 text-xs relative z-10">
-       <div className="mb-3 flex flex-wrap justify-center gap-x-2 gap-y-1">
+        <div className="mb-3 flex flex-wrap justify-center gap-x-2 gap-y-1">
           <a href="/how-to-compress-images" className="text-white/50 hover:text-[#ff7a59] transition underline">How to compress</a>
           <span>·</span>
           <a href="/png-to-webp" className="text-white/50 hover:text-[#ff7a59] transition underline">PNG to WebP</a>
