@@ -272,11 +272,15 @@ export default function Home() {
       )}
 
       <footer className="mt-auto pt-16 text-center text-white/30 text-xs relative z-10">
-       <div className="mb-3">
-          <a href="/how-to-compress-images" className="text-white/50 hover:text-[#ff7a59] transition underline">How to compress images</a>
-          <span className="mx-2">·</span>
+       <div className="mb-3 flex flex-wrap justify-center gap-x-2 gap-y-1">
+          <a href="/how-to-compress-images" className="text-white/50 hover:text-[#ff7a59] transition underline">How to compress</a>
+          <span>·</span>
           <a href="/png-to-webp" className="text-white/50 hover:text-[#ff7a59] transition underline">PNG to WebP</a>
-          <span className="mx-2">·</span>
+          <span>·</span>
+          <a href="/jpg-to-webp" className="text-white/50 hover:text-[#ff7a59] transition underline">JPG to WebP</a>
+          <span>·</span>
+          <a href="/compress-images-for-email" className="text-white/50 hover:text-[#ff7a59] transition underline">For email</a>
+          <span>·</span>
           <a href="/faq" className="text-white/50 hover:text-[#ff7a59] transition underline">FAQ</a>
         </div>
         <p>TinyPix — your images never get stored anywhere</p>
