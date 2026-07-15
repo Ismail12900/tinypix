@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import imageCompression from "browser-image-compression";
 import JSZip from "jszip";
 
@@ -25,6 +25,7 @@ export default function Home() {
   const [format, setFormat] = useState("original");
   const [maxSize, setMaxSize] = useState(0);
   const [isCompressing, setIsCompressing] = useState(false);
+  const [progress, setProgress] = useState({ done: 0, total: 0 });
   const inputRef = useRef(null);
 
   const handleFiles = (newFiles) => {
@@ -38,10 +39,25 @@ export default function Home() {
     setFiles((prev) => [...prev, ...images]);
   };
 
-  const handleDrop = (e) => {
+ const handleDrop = (e) => {
     e.preventDefault();
     setIsDragging(false);
     handleFiles(e.dataTransfer.files);
+  };
+
+  useEffect(() => {
+    const onPaste = (e) => {
+      if (e.clipboardData && e.clipboardData.files.length > 0) {
+        handleFiles(e.clipboardData.files);
+      }
+    };
+    window.addEventListener("paste", onPaste);
+    return () => window.removeEventListener("paste", onPaste);
+  }, []);
+
+  const reset = () => {
+    files.forEach((f) => URL.revokeObjectURL(f.preview));
+    setFiles([]);
   };
 
   const formatSize = (bytes) => {
@@ -65,6 +81,7 @@ export default function Home() {
 
   const compressAll = async () => {
     setIsCompressing(true);
+    setProgress({ done: 0, total: files.length });
     const options = {
       initialQuality: quality / 100,
       maxSizeMB: 10,
@@ -84,6 +101,7 @@ export default function Home() {
       } catch {
         results.push(item);
       }
+      setProgress((p) => ({ ...p, done: p.done + 1 }));
     }
     setFiles(results);
     setIsCompressing(false);
@@ -112,9 +130,9 @@ export default function Home() {
     URL.revokeObjectURL(url);
   };
 
-  const reset = () => {
-    files.forEach((f) => URL.revokeObjectURL(f.preview));
-    setFiles([]);
+  const removeFile = (index) => {
+    URL.revokeObjectURL(files[index].preview);
+    setFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
   const compressedFiles = files.filter((f) => f.compressed);
@@ -158,7 +176,7 @@ export default function Home() {
           >
             <div className="text-5xl mb-4">🖼️</div>
             <p className="text-xl font-bold">Drop your images here or click to browse</p>
-            <p className="text-sm text-white/40 mt-2">JPG · PNG · WebP, unlimited files</p>
+            <p className="text-sm text-white/40 mt-2">JPG · PNG · WebP, unlimited files · or paste with Ctrl+V</p>
             <input ref={inputRef} type="file" accept="image/*" multiple hidden onChange={(e) => handleFiles(e.target.files)} />
           </div>
         </div>
@@ -255,7 +273,7 @@ export default function Home() {
               disabled={isCompressing}
               className="bg-gradient-to-r from-[#ff7a59] to-[#e85d3d] hover:brightness-110 disabled:opacity-50 px-10 py-3.5 rounded-2xl font-extrabold text-lg transition shadow-lg shadow-[#ff7a59]/30"
             >
-              {isCompressing ? "⏳ Working..." : "🚀 Compress images"}
+              {isCompressing ? `⏳ Compressing ${progress.done}/${progress.total}...` : "🚀 Compress images"}
             </button>
             {compressedFiles.length > 1 && (
               <button onClick={downloadAllZip} className="bg-gradient-to-r from-[#a78bfa] to-[#7c3aed] hover:brightness-110 px-7 py-3.5 rounded-2xl font-bold transition shadow-lg shadow-[#7c3aed]/30">
@@ -269,6 +287,13 @@ export default function Home() {
           <div className="mt-6 space-y-3">
             {files.map((item, i) => (
               <div key={i} className="glass rounded-2xl p-3 flex items-center gap-3 fade-up hover:bg-white/[0.06] transition">
+                <button
+                  onClick={() => removeFile(i)}
+                  title="Remove"
+                  className="text-white/30 hover:text-red-400 transition text-lg font-bold flex-shrink-0 w-6"
+                >
+                  ✕
+                </button>
                 <img src={item.preview} alt="" className="w-14 h-14 rounded-xl object-cover flex-shrink-0 ring-1 ring-white/10" />
                 <div className="flex-1 min-w-0">
                   <p className="truncate text-sm font-semibold">{item.original.name}</p>
